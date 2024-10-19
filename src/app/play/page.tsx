@@ -8,10 +8,11 @@ export default function Play() {
   const [difficulty, setDifficulty] = useState<
     "beginner" | "intermediate" | "expert"
   >();
+  const [hovered, setHovered] = useState<string | null>(null);
 
   return (
     <div className={styles.wrapper}>
-      <div></div>
+      <div className={styles.language}>🇪🇸 Spanish</div>
       <div className={styles.content}>
         <span className={styles.big}>Choose your game mode!</span>
         <div className={styles.difficultySelect}>
@@ -89,6 +90,8 @@ export default function Play() {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring" }}
+                onHoverStart={() => setHovered("countdown")}
+                onHoverEnd={() => setHovered(null)}
               >
                 <span className={styles.icon}>💣</span>
                 <span className={styles.title}>Countdown</span>
@@ -104,6 +107,8 @@ export default function Play() {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.25, type: "spring" }}
+                onHoverStart={() => setHovered("fruitSlash")}
+                onHoverEnd={() => setHovered(null)}
               >
                 <span className={styles.icon}>🍊</span>
                 <span className={styles.title}>Fruit Slash</span>
@@ -119,7 +124,11 @@ export default function Play() {
       <motion.div
         className={styles.ballWrapper}
         initial={{ y: "120vh", rotate: 90 }}
-        animate={{ y: "70vh", rotate: 0 }}
+        animate={{
+          y: "70vh",
+          rotate:
+            hovered === "countdown" ? -10 : hovered === "fruitSlash" ? 10 : 0,
+        }}
         transition={{ type: "spring", stiffness: 80, damping: 10 }}
       >
         <div className={styles.ball}>

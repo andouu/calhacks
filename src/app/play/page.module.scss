@@ -79,6 +79,16 @@
   }
 }
 
+.language {
+  position: absolute;
+  top: 2rem;
+  right: 2.5rem;
+  border: 1px solid lightgray;
+  border-radius: 99rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.8rem;
+}
+
 .ballWrapper {
   position: fixed;
   width: 100%;
