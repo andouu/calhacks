@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./page.module.scss";
 
 export default function Home() {
@@ -11,7 +12,9 @@ export default function Home() {
           <br />
           boring, boring, boring.
         </span>
-        <button className={`${styles.action} outlined`}>Play Now!</button>
+        <Link href="/play">
+          <button className={`${styles.action} outlined`}>Play Now!</button>
+        </Link>
       </div>
       <div className={styles.ball}>
         <img className={styles.face} src="/face.svg" />
