@@ -1,0 +1,109 @@
+.wrapper {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.lives {
+  position: absolute;
+  top: 3.5rem;
+  right: 5rem;
+  z-index: 99;
+  display: flex;
+  gap: 0.5rem;
+  font-size: 3rem;
+  color: var(--deep-red);
+}
+
+.title {
+  font-size: 5rem;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 5rem;
+
+  .card {
+    width: 35rem;
+    height: 35rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+
+    img {
+      width: 100%;
+      height: 25rem;
+      padding: 2.5rem;
+      border: 1px solid lightgray;
+      border-radius: 15px;
+      object-fit: contain;
+    }
+
+    p {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+  }
+}
+
+.play {
+  padding: 1rem 2rem;
+  margin-top: 5rem;
+  border-radius: 99rem;
+  border: none;
+  font-size: 2rem;
+  background: var(--pink);
+}
+
+.controls {
+  position: absolute;
+  bottom: 10rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+
+  button {
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 2rem;
+    border-radius: 99rem;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    transition: all 0.2s;
+  }
+}
+
+.response {
+  user-select: none;
+  font-size: 1.8rem;
+}
+
+.goBack {
+  position: fixed;
+  bottom: 5rem;
+  left: 5rem;
+  padding: 1rem 2rem;
+  border: 1px solid lightgray;
+  border-radius: 99rem;
+}

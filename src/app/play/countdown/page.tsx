@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import styles from "./page.module.scss";
-import { FaMicrophone, FaPlay, FaRegStopCircle } from "react-icons/fa";
+import { FaHeart, FaMicrophone, FaPlay, FaRegStopCircle } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
 import { UnstyledLink } from "@/app/Components/UnstyledLink";
 import {
@@ -156,10 +156,57 @@ const Answer = ({
         <motion.span
           className={styles.dialog}
           initial={{ x: "-50%", y: 0, opacity: 0 }}
-          animate={{ y: -150, opacity: 1 }}
+          animate={{ y: -125, opacity: 1 }}
           transition={{ delay: 1 }}
         >
           {correct ? "Yay!! Correct Answer!" : "Aww... Wrong Answer"}
+        </motion.span>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+interface GameEndProps {
+  points: number;
+}
+
+const GameEnd = ({ points }: GameEndProps) => {
+  return (
+    <motion.div
+      className={styles.gameEndWrapper}
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      transition={{
+        type: "spring",
+        stiffness: 120,
+        damping: 15,
+      }}
+    >
+      <span className={styles.title}>Game Over!</span>
+      <span className={styles.score}>You scored {points} pts</span>
+      <UnstyledLink href="/play">
+        <button className={styles.games}>Back to Games</button>
+      </UnstyledLink>
+      <motion.div
+        className={styles.ballWrapper}
+        initial={{ x: "-100%", y: "120vh", rotate: 90 }}
+        animate={{
+          x: "-50%",
+          y: "55vh",
+          rotate: 35,
+        }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 100, damping: 15 }}
+      >
+        <div className={styles.ball}>
+          <img className={styles.face} src="/face.svg" />
+        </div>
+        <motion.span
+          className={styles.dialog}
+          initial={{ x: "-50%", y: 0, opacity: 0 }}
+          animate={{ y: -125, opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          Well Done!
         </motion.span>
       </motion.div>
     </motion.div>
@@ -186,9 +233,9 @@ const Game = () => {
           setGameEnded(true);
           clearInterval(timer);
         } else {
-          setLives((prev) => prev - 1);
           setShowingAnswer(true);
         }
+        setLives((prev) => prev - 1);
         clearInterval(timer);
       } else if (!showingAnswer && !gameEnded) {
         setSecondsLeft((prev) => prev - 1);
@@ -212,12 +259,23 @@ const Game = () => {
       setGameEnded(true);
     } else {
       setShowingAnswer(true);
-      setLives((prev) => prev - 1);
     }
+    setLives((prev) => prev - 1);
   };
 
   return (
     <motion.div className={styles.wrapper}>
+      <div className={styles.lives}>
+        <motion.div animate={{ opacity: lives <= 2 ? 0.5 : 1 }}>
+          <FaHeart />
+        </motion.div>
+        <motion.div animate={{ opacity: lives <= 1 ? 0.5 : 1 }}>
+          <FaHeart />
+        </motion.div>
+        <motion.div animate={{ opacity: lives === 0 ? 0.5 : 1 }}>
+          <FaHeart />
+        </motion.div>
+      </div>
       <AnimatePresence>
         {showingAnswer && (
           <Answer
@@ -230,7 +288,7 @@ const Game = () => {
             continueGame={handleNextQuestion}
           />
         )}
-        {gameEnded && null}
+        {gameEnded && <GameEnd key="gameEnd" points={points} />}
       </AnimatePresence>
       <motion.div
         className={styles.points}
@@ -319,6 +377,7 @@ const Game = () => {
 
 export default function Countdown() {
   const [showHelp, setShowHelp] = useState<boolean>(true);
+
   return (
     <AnimatePresence mode="wait">
       {showHelp ? (
