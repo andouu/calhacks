@@ -11,7 +11,6 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { useRouter } from "next/navigation";
 
 const Help = ({ startGame }: { startGame: () => void }) => {
   return (
@@ -87,7 +86,6 @@ interface AnswerProps {
 }
 
 const Answer = ({
-  question,
   answer,
   correct,
   prevPoints,
@@ -237,15 +235,15 @@ const GameEnd = ({ points, playAgain }: GameEndProps) => {
 
 const Game = () => {
   const [lives, setLives] = useState<number>(3);
-  const [question, setQuestion] = useState<string>(QUESTIONS[4].question);
-  const [answer, setAnswer] = useState<string>(QUESTIONS[4].answer);
+  const [question] = useState<string>(QUESTIONS[4].question);
+  const [answer] = useState<string>(QUESTIONS[4].answer);
   const [secondsLeft, setSecondsLeft] = useState<number>(30);
   const [recording, setRecording] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
-  const [responseAudio, setResponseAudio] = useState<string>("");
-  const [prevPoints, setPrevPoints] = useState<number>(0);
+  // const [responseAudio, setResponseAudio] = useState<string>("");
+  const [prevPoints] = useState<number>(0);
   const [points, setPoints] = useState<number>(0);
-  const [correct, setCorrect] = useState<boolean>(false);
+  const [correct] = useState<boolean>(false);
   const [showingAnswer, setShowingAnswer] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
 
@@ -272,7 +270,7 @@ const Game = () => {
     return () => {
       clearInterval(timer);
     };
-  }, [secondsLeft, showingAnswer]);
+  }, [lives, gameEnded, secondsLeft, showingAnswer]);
 
   const handleNextQuestion = () => {
     setShowingAnswer(false);

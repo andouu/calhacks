@@ -211,7 +211,7 @@ const Game = () => {
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="popLayout">
       {gameEnded ? (
         <GameEnd key="gameEnd" points={points} playAgain={handlePlayAgain} />
       ) : (
