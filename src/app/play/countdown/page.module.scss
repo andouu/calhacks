@@ -256,9 +256,16 @@
     font-size: 3rem;
   }
 
+  .buttonRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+  }
+
   .games {
     padding: 1rem 2rem;
-    margin-top: 2.5rem;
     border-radius: 99rem;
     border: none;
     font-size: 2rem;

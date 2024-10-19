@@ -74,6 +74,59 @@ const Help = ({ startGame }: HelpProps) => {
   );
 };
 
+interface GameEndProps {
+  points: number;
+  playAgain: () => void;
+}
+
+const GameEnd = ({ points, playAgain }: GameEndProps) => {
+  return (
+    <motion.div
+      className={styles.gameEndWrapper}
+      initial={{ y: "100%" }}
+      animate={{ y: 0 }}
+      transition={{
+        type: "spring",
+        stiffness: 120,
+        damping: 15,
+      }}
+    >
+      <span className={styles.title}>Game Over!</span>
+      <span className={styles.score}>You scored {points} pts</span>
+      <div className={styles.buttonRow}>
+        <button className={styles.games} onClick={playAgain}>
+          Play Again
+        </button>
+        <UnstyledLink href="/play">
+          <button className={styles.games}>Back to Games</button>
+        </UnstyledLink>
+      </div>
+      <motion.div
+        className={styles.ballWrapper}
+        initial={{ x: "-100%", y: "120vh", rotate: 90 }}
+        animate={{
+          x: "-50%",
+          y: "55vh",
+          rotate: 35,
+        }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 100, damping: 15 }}
+      >
+        <div className={styles.ball}>
+          <img className={styles.face} src="/face.svg" />
+        </div>
+        <motion.span
+          className={styles.dialog}
+          initial={{ x: "-50%", y: 0, opacity: 0 }}
+          animate={{ y: -125, opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          Well Done!
+        </motion.span>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 interface Item {
   name: string;
   emoji: string;
@@ -96,6 +149,7 @@ const Game = () => {
   const [lives, setLives] = useState<number>(3);
   const [recording, setRecording] = useState<boolean>(false);
   const [response, setResponse] = useState<string | null>(null);
+  const [points, setPoints] = useState<number>(0);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
 
   const handleClearBoard = () => {
@@ -104,6 +158,12 @@ const Game = () => {
       setGameEnded(true);
     }
     setLives((prev) => prev - 1);
+  };
+
+  const handlePlayAgain = () => {
+    setLives(3);
+    setPoints(0);
+    setGameEnded(false);
   };
 
   return (
@@ -119,6 +179,9 @@ const Game = () => {
           <FaHeart />
         </motion.div>
       </div>
+      <AnimatePresence>
+        {gameEnded && <GameEnd points={points} playAgain={handlePlayAgain} />}
+      </AnimatePresence>
       <div className={styles.controls}>
         <div className={styles.actionRow}>
           <motion.button

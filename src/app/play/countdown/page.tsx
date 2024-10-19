@@ -11,6 +11,7 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const Help = ({ startGame }: { startGame: () => void }) => {
   return (
@@ -166,11 +167,27 @@ const Answer = ({
   );
 };
 
-interface GameEndProps {
-  points: number;
+interface Question {
+  question: string;
+  answer: string;
 }
 
-const GameEnd = ({ points }: GameEndProps) => {
+const QUESTIONS: Question[] = [
+  { question: "1 + 6 = ?", answer: "siete" },
+  { question: "1 + ? = 3", answer: "dos" },
+  { question: "? = 1 + 8", answer: "nueve" },
+  { question: "1 + 5 = ?", answer: "seis" },
+  { question: "3 x 1 = ?", answer: "tres" },
+];
+
+interface GameEndProps {
+  points: number;
+  playAgain: () => void;
+}
+
+const GameEnd = ({ points, playAgain }: GameEndProps) => {
+  const router = useRouter();
+
   return (
     <motion.div
       className={styles.gameEndWrapper}
@@ -184,9 +201,14 @@ const GameEnd = ({ points }: GameEndProps) => {
     >
       <span className={styles.title}>Game Over!</span>
       <span className={styles.score}>You scored {points} pts</span>
-      <UnstyledLink href="/play">
-        <button className={styles.games}>Back to Games</button>
-      </UnstyledLink>
+      <div className={styles.buttonRow}>
+        <button className={styles.games} onClick={playAgain}>
+          Play Again
+        </button>
+        <UnstyledLink href="/play">
+          <button className={styles.games}>Back to Games</button>
+        </UnstyledLink>
+      </div>
       <motion.div
         className={styles.ballWrapper}
         initial={{ x: "-100%", y: "120vh", rotate: 90 }}
@@ -215,11 +237,12 @@ const GameEnd = ({ points }: GameEndProps) => {
 
 const Game = () => {
   const [lives, setLives] = useState<number>(3);
-  const [question, setQuestion] = useState<string>("1 + 6 = ?");
-  const [answer, setAnswer] = useState<string>("siete");
+  const [question, setQuestion] = useState<string>(QUESTIONS[4].question);
+  const [answer, setAnswer] = useState<string>(QUESTIONS[4].answer);
   const [secondsLeft, setSecondsLeft] = useState<number>(30);
   const [recording, setRecording] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
+  const [responseAudio, setResponseAudio] = useState<string>("");
   const [prevPoints, setPrevPoints] = useState<number>(0);
   const [points, setPoints] = useState<number>(0);
   const [correct, setCorrect] = useState<boolean>(false);
@@ -227,6 +250,10 @@ const Game = () => {
   const [gameEnded, setGameEnded] = useState<boolean>(false);
 
   useEffect(() => {
+    if (showingAnswer || gameEnded) {
+      return;
+    }
+
     const timer = setInterval(() => {
       if (secondsLeft === 0) {
         if (lives === 1) {
@@ -263,6 +290,16 @@ const Game = () => {
     setLives((prev) => prev - 1);
   };
 
+  const handlePlayAgain = () => {
+    setLives(3);
+    setPoints(0);
+    setGameEnded(false);
+    setShowingAnswer(false);
+    setSecondsLeft(30);
+    setRecording(false);
+    setResponse("");
+  };
+
   return (
     <motion.div className={styles.wrapper}>
       <div className={styles.lives}>
@@ -288,7 +325,9 @@ const Game = () => {
             continueGame={handleNextQuestion}
           />
         )}
-        {gameEnded && <GameEnd key="gameEnd" points={points} />}
+        {gameEnded && (
+          <GameEnd key="gameEnd" points={points} playAgain={handlePlayAgain} />
+        )}
       </AnimatePresence>
       <motion.div
         className={styles.points}
@@ -303,7 +342,7 @@ const Game = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        1 + 6 = ?
+        {question}
       </motion.span>
       <motion.span
         className={styles.response}
