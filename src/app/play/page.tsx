@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 import styles from "./page.module.scss";
 import { useState } from "react";
-import Link from "next/link";
 import { UnstyledLink } from "../Components/UnstyledLink";
 
 export default function Play() {
