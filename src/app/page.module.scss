@@ -1,0 +1,47 @@
+.ball {
+  position: fixed;
+  bottom: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50vw;
+  height: 50vw;
+  border-radius: 99rem;
+  box-shadow: 0 0 10px 5rem var(--pink);
+  background: var(--pink);
+
+  .face {
+    position: absolute;
+    left: 50%;
+    top: 7.5rem;
+    transform: translateX(-50%);
+  }
+}
+
+.content {
+  position: absolute;
+  left: 50%;
+  top: 20rem;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  .big {
+    font-size: 6.5rem;
+  }
+
+  .small {
+    font-size: 2rem;
+  }
+
+  .action {
+    padding: 1rem 2rem;
+    margin-top: 5rem;
+    border-radius: 99rem;
+    border: 1.5px solid lightgray;
+    font-size: 1.8rem;
+    background: none;
+  }
+}

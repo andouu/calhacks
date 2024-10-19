@@ -1,0 +1,62 @@
+:root {
+  --pink: #ffdbdb;
+  --dark: #252525;
+  color: var(--dark);
+  font-size: 62.5%;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-pangolin);
+}
+
+body {
+  font-size: 1.6rem;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 6.5rem;
+  padding: 1rem 2.5rem;
+
+  .logo {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+button {
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.outlined {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: -100%;
+      left: 0;
+      z-index: -1;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      background-color: var(--pink);
+      transition: all 0.15s;
+    }
+
+    &:hover {
+      border-color: var(--pink);
+      &::after {
+        top: 0;
+        left: 0;
+      }
+    }
+  }
+}
