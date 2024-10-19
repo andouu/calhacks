@@ -115,6 +115,7 @@ const Answer = ({
       className={styles.answerWrapper}
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
+      exit={{ y: "100%" }}
       transition={{
         type: "spring",
         stiffness: 120,
@@ -186,13 +187,12 @@ interface GameEndProps {
 }
 
 const GameEnd = ({ points, playAgain }: GameEndProps) => {
-  const router = useRouter();
-
   return (
     <motion.div
       className={styles.gameEndWrapper}
       initial={{ y: "100%" }}
       animate={{ y: 0 }}
+      exit={{ y: "100%" }}
       transition={{
         type: "spring",
         stiffness: 120,
@@ -301,116 +301,118 @@ const Game = () => {
   };
 
   return (
-    <motion.div className={styles.wrapper}>
-      <div className={styles.lives}>
-        <motion.div animate={{ opacity: lives <= 2 ? 0.5 : 1 }}>
-          <FaHeart />
-        </motion.div>
-        <motion.div animate={{ opacity: lives <= 1 ? 0.5 : 1 }}>
-          <FaHeart />
-        </motion.div>
-        <motion.div animate={{ opacity: lives === 0 ? 0.5 : 1 }}>
-          <FaHeart />
-        </motion.div>
-      </div>
-      <AnimatePresence>
-        {showingAnswer && (
-          <Answer
-            key="answer"
-            question={question}
-            answer={answer}
-            correct={correct}
-            prevPoints={prevPoints}
-            currPoints={points}
-            continueGame={handleNextQuestion}
-          />
-        )}
-        {gameEnded && (
-          <GameEnd key="gameEnd" points={points} playAgain={handlePlayAgain} />
-        )}
-      </AnimatePresence>
-      <motion.div
-        className={styles.points}
-        initial={{ x: "-50%", opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-      >
-        {points} {points === 1 ? "Point" : "Points"}
-      </motion.div>
-      <motion.span
-        className={styles.question}
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        {question}
-      </motion.span>
-      <motion.span
-        className={styles.response}
-        style={{ color: !response || !recording ? "gray" : undefined }}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        {recording
-          ? response
-            ? response
-            : "Say your answer!"
-          : "Not recording..."}
-      </motion.span>
-      <motion.span
-        className={styles.timeText}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.35 }}
-      >
-        {secondsLeft} {secondsLeft === 1 ? "Second" : "Seconds"} Left!
-      </motion.span>
-      <motion.div
-        className={styles.timer}
-        initial={{ y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.25 }}
-      >
-        <motion.div
-          className={styles.inner}
-          initial={{ width: "100%" }}
-          animate={{ width: `${(secondsLeft / 30) * 100}%` }}
+    <AnimatePresence mode="popLayout">
+      {gameEnded ? (
+        <GameEnd key="gameEnd" points={points} playAgain={handlePlayAgain} />
+      ) : showingAnswer ? (
+        <Answer
+          key="answer"
+          question={question}
+          answer={answer}
+          correct={correct}
+          prevPoints={prevPoints}
+          currPoints={points}
+          continueGame={handleNextQuestion}
         />
-      </motion.div>
-      <div className={styles.actionRow}>
-        <motion.button
-          style={{ backgroundColor: recording ? "#FA5454" : "#222222" }}
-          onClick={() => setRecording((prev) => !prev)}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-        >
-          {recording ? (
-            <>
-              <FaRegStopCircle size="2rem" />
-              Stop Recording
-            </>
-          ) : (
-            <>
-              <FaMicrophone size="2rem" />
-              Record Response
-            </>
-          )}
-        </motion.button>
-        <motion.button
-          style={{ backgroundColor: "#FA5454" }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          onClick={handleSkip}
-        >
-          <FaX /> Give Up
-        </motion.button>
-      </div>
-      <UnstyledLink href="/play">
-        <div className={styles.goBack}>Go Back</div>
-      </UnstyledLink>
-    </motion.div>
+      ) : (
+        <motion.div key="game" exit={{ opacity: 0 }}>
+          <motion.div className={styles.wrapper}>
+            <div className={styles.lives}>
+              <motion.div animate={{ opacity: lives <= 2 ? 0.5 : 1 }}>
+                <FaHeart />
+              </motion.div>
+              <motion.div animate={{ opacity: lives <= 1 ? 0.5 : 1 }}>
+                <FaHeart />
+              </motion.div>
+              <motion.div animate={{ opacity: lives === 0 ? 0.5 : 1 }}>
+                <FaHeart />
+              </motion.div>
+            </div>
+            <motion.div
+              className={styles.points}
+              initial={{ x: "-50%", opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              {points} {points === 1 ? "Point" : "Points"}
+            </motion.div>
+            <motion.span
+              className={styles.question}
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {question}
+            </motion.span>
+            <motion.span
+              className={styles.response}
+              style={{ color: !response || !recording ? "gray" : undefined }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              {recording
+                ? response
+                  ? response
+                  : "Say your answer!"
+                : "Not recording..."}
+            </motion.span>
+            <motion.span
+              className={styles.timeText}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.35 }}
+            >
+              {secondsLeft} {secondsLeft === 1 ? "Second" : "Seconds"} Left!
+            </motion.span>
+            <motion.div
+              className={styles.timer}
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.25 }}
+            >
+              <motion.div
+                className={styles.inner}
+                initial={{ width: "100%" }}
+                animate={{ width: `${(secondsLeft / 30) * 100}%` }}
+              />
+            </motion.div>
+            <div className={styles.actionRow}>
+              <motion.button
+                style={{ backgroundColor: recording ? "#FA5454" : "#222222" }}
+                onClick={() => setRecording((prev) => !prev)}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                {recording ? (
+                  <>
+                    <FaRegStopCircle size="2rem" />
+                    Stop Recording
+                  </>
+                ) : (
+                  <>
+                    <FaMicrophone size="2rem" />
+                    Record Response
+                  </>
+                )}
+              </motion.button>
+              <motion.button
+                style={{ backgroundColor: "#FA5454" }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                onClick={handleSkip}
+              >
+                <FaX /> Give Up
+              </motion.button>
+            </div>
+            <UnstyledLink href="/play">
+              <div className={styles.goBack}>Go Back</div>
+            </UnstyledLink>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
