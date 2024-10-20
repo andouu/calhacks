@@ -216,16 +216,21 @@ const Game = () => {
         <GameEnd key="gameEnd" points={points} playAgain={handlePlayAgain} />
       ) : (
         <motion.div key="game" className={styles.wrapper} exit={{ opacity: 0 }}>
-          <div className={styles.lives}>
-            <motion.div animate={{ opacity: lives <= 2 ? 0.5 : 1 }}>
-              <FaHeart />
-            </motion.div>
-            <motion.div animate={{ opacity: lives <= 1 ? 0.5 : 1 }}>
-              <FaHeart />
-            </motion.div>
-            <motion.div animate={{ opacity: lives === 0 ? 0.5 : 1 }}>
-              <FaHeart />
-            </motion.div>
+          <div className={styles.stats}>
+            <div className={styles.lives}>
+              <motion.div animate={{ opacity: lives <= 2 ? 0.5 : 1 }}>
+                <FaHeart />
+              </motion.div>
+              <motion.div animate={{ opacity: lives <= 1 ? 0.5 : 1 }}>
+                <FaHeart />
+              </motion.div>
+              <motion.div animate={{ opacity: lives === 0 ? 0.5 : 1 }}>
+                <FaHeart />
+              </motion.div>
+            </div>
+            <span className={styles.points}>
+              {points} {points === 1 ? "pt" : "pts"}
+            </span>
           </div>
           <div className={styles.objects}>
             <AnimatePresence>
