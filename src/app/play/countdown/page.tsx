@@ -11,6 +11,7 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
+import { useMicrophone } from "@/app/Context/Microphone";
 
 const Help = ({ startGame }: { startGame: () => void }) => {
   return (
@@ -77,6 +78,7 @@ const Help = ({ startGame }: { startGame: () => void }) => {
 };
 
 interface AnswerProps {
+  latestResponse: string;
   question: string;
   answer: string;
   correct: boolean;
@@ -86,6 +88,7 @@ interface AnswerProps {
 }
 
 const Answer = ({
+  latestResponse,
   answer,
   correct,
   prevPoints,
@@ -123,15 +126,12 @@ const Answer = ({
       <span className={styles.title}>The answer was...</span>
       <div className={styles.answer}>
         <span className={styles.answerText}>{answer}</span>
-        <button className={styles.play}>
+        {/* <button className={styles.play}>
           <FaPlay />
-        </button>
+        </button> */}
       </div>
       <div className={styles.yourAnswer}>
-        <span>Your Answer</span>
-        <button>
-          <FaPlay size="1rem" />
-        </button>
+        <span>Your Answer: "{latestResponse}"</span>
       </div>
       <motion.span className={styles.pointCounter}>{roundedPoints}</motion.span>
       <button className={styles.continue} onClick={continueGame}>
@@ -238,14 +238,20 @@ const Game = () => {
   const [question] = useState<string>(QUESTIONS[4].question);
   const [answer] = useState<string>(QUESTIONS[4].answer);
   const [secondsLeft, setSecondsLeft] = useState<number>(30);
-  const [recording, setRecording] = useState<boolean>(false);
-  const [response, setResponse] = useState<string>("");
-  // const [responseAudio, setResponseAudio] = useState<string>("");
+  const [latestResponse, setLatestResponse] = useState<string>("");
   const [prevPoints] = useState<number>(0);
   const [points, setPoints] = useState<number>(0);
   const [correct] = useState<boolean>(false);
   const [showingAnswer, setShowingAnswer] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
+
+  const { paused, togglePause, content } = useMicrophone();
+
+  useEffect(() => {
+    if (content) {
+      setLatestResponse(content);
+    }
+  }, [content]);
 
   useEffect(() => {
     if (showingAnswer || gameEnded) {
@@ -258,6 +264,9 @@ const Game = () => {
           setGameEnded(true);
           clearInterval(timer);
         } else {
+          if (!paused) {
+            togglePause();
+          }
           setShowingAnswer(true);
         }
         setLives((prev) => prev - 1);
@@ -275,11 +284,12 @@ const Game = () => {
   const handleNextQuestion = () => {
     setShowingAnswer(false);
     setSecondsLeft(30);
-    setRecording(false);
-    setResponse("");
   };
 
   const handleSkip = () => {
+    if (!paused) {
+      togglePause();
+    }
     if (lives === 1) {
       setGameEnded(true);
     } else {
@@ -294,17 +304,16 @@ const Game = () => {
     setGameEnded(false);
     setShowingAnswer(false);
     setSecondsLeft(30);
-    setRecording(false);
-    setResponse("");
   };
 
   return (
-    <AnimatePresence mode="popLayout">
+    <AnimatePresence mode="sync">
       {gameEnded ? (
         <GameEnd key="gameEnd" points={points} playAgain={handlePlayAgain} />
       ) : showingAnswer ? (
         <Answer
           key="answer"
+          latestResponse={latestResponse}
           question={question}
           answer={answer}
           correct={correct}
@@ -343,14 +352,16 @@ const Game = () => {
             </motion.span>
             <motion.span
               className={styles.response}
-              style={{ color: !response || !recording ? "gray" : undefined }}
+              style={{
+                color: !content || paused ? "gray" : undefined,
+              }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5 }}
             >
-              {recording
-                ? response
-                  ? response
+              {!paused
+                ? content
+                  ? content
                   : "Say your answer!"
                 : "Not recording..."}
             </motion.span>
@@ -376,13 +387,13 @@ const Game = () => {
             </motion.div>
             <div className={styles.actionRow}>
               <motion.button
-                style={{ backgroundColor: recording ? "#FA5454" : "#222222" }}
-                onClick={() => setRecording((prev) => !prev)}
+                style={{ backgroundColor: !paused ? "#FA5454" : "#222222" }}
+                onClick={togglePause}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 }}
               >
-                {recording ? (
+                {!paused ? (
                   <>
                     <FaRegStopCircle size="2rem" />
                     Stop Recording
