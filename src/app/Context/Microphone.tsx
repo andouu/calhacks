@@ -1,12 +1,5 @@
 "use client";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, ReactNode, useEffect, useRef, useState } from "react";
 import RecordRTC from "recordrtc";
 
 type MicrophoneContextType = {
@@ -18,7 +11,7 @@ type MicrophoneContextType = {
   clearContent: () => void;
 };
 
-const MicrophoneContext = createContext<MicrophoneContextType>({
+export const MicrophoneContext = createContext<MicrophoneContextType>({
   connected: false,
   socket: null,
   paused: false,
@@ -26,14 +19,6 @@ const MicrophoneContext = createContext<MicrophoneContextType>({
   content: "",
   clearContent: () => {},
 });
-
-export const useMicrophone = () => {
-  const value = useContext(MicrophoneContext);
-  if (!value) {
-    throw new Error("useMicrophone must be used within a MicrophoneProvider");
-  }
-  return value;
-};
 
 const SAMPLE_RATE = 48000;
 
@@ -207,3 +192,5 @@ export const MicrophoneProvider = ({ children }: { children: ReactNode }) => {
     </MicrophoneContext.Provider>
   );
 };
+
+export default MicrophoneProvider;

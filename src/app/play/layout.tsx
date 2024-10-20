@@ -1,5 +1,8 @@
+import dynamic from "next/dynamic";
 import { ReactNode } from "react";
-import { MicrophoneProvider } from "../Context/Microphone";
+const MicrophoneProvider = dynamic(() => import("../Context/Microphone"), {
+  ssr: false,
+});
 
 export default function PlayLayout({ children }: { children: ReactNode }) {
   return <MicrophoneProvider>{children}</MicrophoneProvider>;
