@@ -59,7 +59,7 @@ export const MicrophoneProvider = ({ children }: { children: ReactNode }) => {
           channels: 1,
           language_config: {
             languages: ["en", "es", "jp"],
-            code_switching: true,
+            code_switching: false,
           },
         }),
       });
@@ -131,9 +131,9 @@ export const MicrophoneProvider = ({ children }: { children: ReactNode }) => {
         if (message?.type === "transcript") {
           console.log(message);
           if (message.data.type === "final") {
-            setContent((prev) => prev + message.data.utterance.text);
+            setContent((prev) => prev + message.data.utterance.text.trim());
           } else {
-            setContent(message.data.utterance.text);
+            setContent(message.data.utterance.text.trim());
           }
         }
       };

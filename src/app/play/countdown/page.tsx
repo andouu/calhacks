@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import styles from "./page.module.scss";
-import { FaHeart, FaMicrophone, FaPlay, FaRegStopCircle } from "react-icons/fa";
+import { FaHeart, FaMicrophone, FaRegStopCircle } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
 import { UnstyledLink } from "@/app/Components/UnstyledLink";
 import {
@@ -168,15 +168,15 @@ const Answer = ({
 
 interface Question {
   question: string;
-  answer: string;
+  answers: string[];
 }
 
 const QUESTIONS: Question[] = [
-  { question: "1 + 6 = ?", answer: "siete" },
-  { question: "1 + ? = 3", answer: "dos" },
-  { question: "? = 1 + 8", answer: "nueve" },
-  { question: "1 + 5 = ?", answer: "seis" },
-  { question: "3 x 1 = ?", answer: "tres" },
+  { question: "1 + 6 = ?", answers: ["7", "siete", "siete."] },
+  { question: "1 + ? = 3", answers: ["2", "dos", "dos."] },
+  { question: "? = 1 + 8", answers: ["9", "nueve", "nueve."] },
+  { question: "1 + 5 = ?", answers: ["6", "seis", "seis."] },
+  { question: "3 x 1 = ?", answers: ["3", "tres", "tres."] },
 ];
 
 interface GameEndProps {
@@ -233,15 +233,18 @@ const GameEnd = ({ points, playAgain }: GameEndProps) => {
   );
 };
 
+const POINT_DELTA = 150;
+
 const Game = () => {
   const [lives, setLives] = useState<number>(3);
-  const [question] = useState<string>(QUESTIONS[4].question);
-  const [answer] = useState<string>(QUESTIONS[4].answer);
+  const [questionIndex, setQuestionIndex] = useState<number>(0);
+  const [question, setQuestion] = useState<string>(QUESTIONS[0].question);
+  const [answers, setAnswers] = useState<string[]>(QUESTIONS[0].answers);
   const [secondsLeft, setSecondsLeft] = useState<number>(30);
   const [latestResponse, setLatestResponse] = useState<string>("");
-  const [prevPoints] = useState<number>(0);
+  const [prevPoints, setPrevPoints] = useState<number>(0);
   const [points, setPoints] = useState<number>(0);
-  const [correct] = useState<boolean>(false);
+  const [correct, setCorrect] = useState<boolean>(false);
   const [showingAnswer, setShowingAnswer] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
 
@@ -250,6 +253,14 @@ const Game = () => {
   useEffect(() => {
     if (content) {
       setLatestResponse(content);
+      if (answers.includes(content.toLowerCase())) {
+        setCorrect(true);
+        setPoints((prev) => prev + POINT_DELTA);
+        setShowingAnswer(true);
+        if (!paused) {
+          togglePause();
+        }
+      }
     }
   }, [content]);
 
@@ -284,7 +295,15 @@ const Game = () => {
   const handleNextQuestion = () => {
     setShowingAnswer(false);
     setSecondsLeft(30);
+    setCorrect(false);
+    setPrevPoints(points);
+    setQuestionIndex((prev) => (prev + 1) % QUESTIONS.length);
   };
+
+  useEffect(() => {
+    setQuestion(QUESTIONS[questionIndex].question);
+    setAnswers(QUESTIONS[questionIndex].answers);
+  }, [questionIndex]);
 
   const handleSkip = () => {
     if (!paused) {
@@ -304,6 +323,7 @@ const Game = () => {
     setGameEnded(false);
     setShowingAnswer(false);
     setSecondsLeft(30);
+    setCorrect(false);
   };
 
   return (
@@ -315,7 +335,7 @@ const Game = () => {
           key="answer"
           latestResponse={latestResponse}
           question={question}
-          answer={answer}
+          answer={answers[0]}
           correct={correct}
           prevPoints={prevPoints}
           currPoints={points}
