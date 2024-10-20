@@ -131,7 +131,7 @@ const Answer = ({
         </button> */}
       </div>
       <div className={styles.yourAnswer}>
-        <span>Your Answer: "{latestResponse}"</span>
+        <span>Your Answer: &quot;{latestResponse}&quot; </span>
       </div>
       <motion.span className={styles.pointCounter}>{roundedPoints}</motion.span>
       <button className={styles.continue} onClick={continueGame}>

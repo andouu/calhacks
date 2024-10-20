@@ -143,27 +143,57 @@ interface Item {
 }
 
 const ITEMS: Item[] = [
-  { name: "apple", emoji: "🍎", answers: { es: ["mañana", "mañana."] } },
+  {
+    name: "apple",
+    emoji: "🍎",
+    answers: { es: ["mañana", "mañana."], ja: ["りんご", "アップル"] },
+  },
   {
     name: "banana",
     emoji: "🍌",
-    answers: { es: ["plátano", "plátano.", "platano"] },
+    answers: {
+      es: ["plátano", "plátano.", "platano"],
+      ja: ["バナナ"],
+    },
   },
-  { name: "cherries", emoji: "🍒", answers: { es: ["guindas", "guindas."] } },
-  { name: "grapes", emoji: "🍇", answers: { es: ["uvas", "uvas."] } },
+  {
+    name: "cherries",
+    emoji: "🍒",
+    answers: { es: ["guindas", "guindas."], ja: ["さくらんぼ", "チェリー"] },
+  },
+  {
+    name: "grapes",
+    emoji: "🍇",
+    answers: { es: ["uvas", "uvas."], ja: ["ブドウ"] },
+  },
   {
     name: "lemon",
     emoji: "🍋",
-    answers: { es: ["limón", "limón.", "limon", "limon."] },
+    answers: { es: ["limón", "limón.", "limon", "limon."], ja: ["レモン"] },
   },
   {
     name: "watermelon",
     emoji: "🍉",
-    answers: { es: ["sandía", "sandía.", "sandia", "sandia."] },
+    answers: {
+      es: ["sandía", "sandía.", "sandia", "sandia."],
+      ja: ["スイカ", "ウォーターメロン"],
+    },
   },
-  { name: "orange", emoji: "🍊", answers: { es: ["naranja", "naranja."] } },
-  { name: "peach", emoji: "🍑", answers: { es: ["durazno", "durazno."] } },
-  { name: "pear", emoji: "🍐", answers: { es: ["pera", "pera."] } },
+  {
+    name: "orange",
+    emoji: "🍊",
+    answers: { es: ["naranja", "naranja."], ja: ["オレンジ"] },
+  },
+  {
+    name: "peach",
+    emoji: "🍑",
+    answers: { es: ["durazno", "durazno."], ja: ["桃", "ピーチ"] },
+  },
+  {
+    name: "pear",
+    emoji: "🍐",
+    answers: { es: ["pera", "pera."], ja: ["梨", "ペア"] },
+  },
 ];
 
 const POINT_DELTA = 150;

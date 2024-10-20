@@ -58,7 +58,7 @@ export const MicrophoneProvider = ({ children }: { children: ReactNode }) => {
           bit_depth: 16,
           channels: 1,
           language_config: {
-            languages: ["es"],
+            languages: ["es", "ja"],
             code_switching: false,
           },
         }),
