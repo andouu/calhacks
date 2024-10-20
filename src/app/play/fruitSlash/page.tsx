@@ -1,11 +1,18 @@
 "use client";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
 import styles from "./page.module.scss";
 import { useEffect, useState } from "react";
 import { FaHeart, FaMicrophone, FaRegStopCircle } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
 import { UnstyledLink } from "@/app/Components/UnstyledLink";
 import { Random } from "@/app/Util/Random";
+import { useMicrophone } from "@/app/Context/Microphone";
 
 interface HelpProps {
   startGame: () => void;
@@ -132,30 +139,62 @@ const GameEnd = ({ points, playAgain }: GameEndProps) => {
 interface Item {
   name: string;
   emoji: string;
-  answer: string;
+  answers: { [language: string]: string[] };
 }
 
 const ITEMS: Item[] = [
-  { name: "apple", emoji: "🍎", answer: "apple" },
-  { name: "banana", emoji: "🍌", answer: "banana" },
-  { name: "cherries", emoji: "🍒", answer: "cherries" },
-  { name: "grapes", emoji: "🍇", answer: "grapes" },
-  { name: "lemon", emoji: "🍋", answer: "lemon" },
-  { name: "melon", emoji: "🍈", answer: "melon" },
-  { name: "orange", emoji: "🍊", answer: "orange" },
-  { name: "peach", emoji: "🍑", answer: "peach" },
-  { name: "pear", emoji: "🍐", answer: "pear" },
+  { name: "apple", emoji: "🍎", answers: { es: ["mañana", "mañana."] } },
+  {
+    name: "banana",
+    emoji: "🍌",
+    answers: { es: ["plátano", "plátano.", "platano"] },
+  },
+  { name: "cherries", emoji: "🍒", answers: { es: ["guindas", "guindas."] } },
+  { name: "grapes", emoji: "🍇", answers: { es: ["uvas", "uvas."] } },
+  {
+    name: "lemon",
+    emoji: "🍋",
+    answers: { es: ["limón", "limón.", "limon", "limon."] },
+  },
+  {
+    name: "watermelon",
+    emoji: "🍉",
+    answers: { es: ["sandía", "sandía.", "sandia", "sandia."] },
+  },
+  { name: "orange", emoji: "🍊", answers: { es: ["naranja", "naranja."] } },
+  { name: "peach", emoji: "🍑", answers: { es: ["durazno", "durazno."] } },
+  { name: "pear", emoji: "🍐", answers: { es: ["pera", "pera."] } },
 ];
+
+const POINT_DELTA = 150;
 
 const Game = () => {
   const [lives, setLives] = useState<number>(3);
   const [objects, setObjects] = useState<
     { id: string; initialX: number; item: Item }[]
   >([]);
-  const [recording, setRecording] = useState<boolean>(false);
-  const [response, setResponse] = useState<string | null>(null);
-  const [points, setPoints] = useState<number>(0);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
+  const points = useMotionValue<number>(0);
+  const formattedPoints = useTransform(() => Math.round(points.get()) + " pts");
+
+  const { paused, togglePause, content, clearContent } = useMicrophone();
+
+  useEffect(() => {
+    const index = objects.findIndex((o) =>
+      o.item.answers.es.includes(content.toLowerCase())
+    );
+    if (index !== -1) {
+      setObjects((prev) => {
+        const newObjects = [...prev];
+        newObjects.splice(index, 1);
+        return newObjects;
+      });
+      animate(points, points.get() + POINT_DELTA, {
+        duration: 1,
+        ease: "circInOut",
+      });
+    }
+  }, [content]);
 
   useEffect(() => {
     if (gameEnded) {
@@ -171,7 +210,7 @@ const Game = () => {
         };
         setObjects((prev) => [...prev, newObject]);
       }
-    }, 3500);
+    }, 5000);
 
     return () => {
       clearInterval(spawner);
@@ -187,6 +226,9 @@ const Game = () => {
     if (lives === 1) {
       setObjects([]);
       setGameEnded(true);
+      if (!paused) {
+        togglePause();
+      }
     }
     setLives((prev) => prev - 1);
   };
@@ -197,23 +239,30 @@ const Game = () => {
     }
 
     setObjects([]);
-    setResponse(null);
+    clearContent();
     if (lives === 1) {
       setGameEnded(true);
+      if (!paused) {
+        togglePause();
+      }
     }
     setLives((prev) => prev - 1);
   };
 
   const handlePlayAgain = () => {
     setLives(3);
-    setPoints(0);
+    points.set(0);
     setGameEnded(false);
   };
 
   return (
     <AnimatePresence mode="sync">
       {gameEnded ? (
-        <GameEnd key="gameEnd" points={points} playAgain={handlePlayAgain} />
+        <GameEnd
+          key="gameEnd"
+          points={points.get()}
+          playAgain={handlePlayAgain}
+        />
       ) : (
         <motion.div key="game" className={styles.wrapper} exit={{ opacity: 0 }}>
           <div className={styles.stats}>
@@ -228,9 +277,9 @@ const Game = () => {
                 <FaHeart />
               </motion.div>
             </div>
-            <span className={styles.points}>
-              {points} {points === 1 ? "pt" : "pts"}
-            </span>
+            <motion.span className={styles.points}>
+              {formattedPoints}
+            </motion.span>
           </div>
           <div className={styles.objects}>
             <AnimatePresence>
@@ -256,7 +305,7 @@ const Game = () => {
                     }
                   }}
                   transition={{
-                    bottom: { duration: 10, ease: "linear" },
+                    bottom: { duration: 20, ease: "linear" },
                     opacity: { duration: 0.5 },
                   }}
                 >
@@ -268,12 +317,12 @@ const Game = () => {
           <div className={styles.controls}>
             <div className={styles.actionRow}>
               <motion.button
-                style={{ backgroundColor: recording ? "#FA5454" : "#222222" }}
-                onClick={() => setRecording((prev) => !prev)}
+                style={{ backgroundColor: !paused ? "#FA5454" : "#222222" }}
+                onClick={togglePause}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
               >
-                {recording ? (
+                {!paused ? (
                   <>
                     <FaRegStopCircle size="2rem" />
                     Stop Recording
@@ -297,14 +346,14 @@ const Game = () => {
             </div>
             <motion.div
               className={styles.response}
-              style={{ color: !response || !recording ? "gray" : undefined }}
+              style={{ color: !content || paused ? "gray" : undefined }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5 }}
             >
-              {recording
-                ? response
-                  ? response
+              {!paused
+                ? content
+                  ? content
                   : "Say your answer!"
                 : "Not recording..."}
             </motion.div>

@@ -58,7 +58,7 @@ export const MicrophoneProvider = ({ children }: { children: ReactNode }) => {
           bit_depth: 16,
           channels: 1,
           language_config: {
-            languages: ["en", "es", "jp"],
+            languages: ["es"],
             code_switching: false,
           },
         }),
@@ -107,7 +107,7 @@ export const MicrophoneProvider = ({ children }: { children: ReactNode }) => {
           const modifiedBuffer = buffer.slice(44);
           socketRef.current?.send(modifiedBuffer);
         },
-        timeSlice: 100,
+        timeSlice: 1000,
         sampleRate: SAMPLE_RATE,
         desiredSampRate: SAMPLE_RATE,
         numberOfAudioChannels: 1,
@@ -129,11 +129,18 @@ export const MicrophoneProvider = ({ children }: { children: ReactNode }) => {
       socketRef.current.onmessage = (e) => {
         const message = JSON.parse(e.data);
         if (message?.type === "transcript") {
-          console.log(message);
           if (message.data.type === "final") {
-            setContent((prev) => prev + message.data.utterance.text.trim());
+            setContent(
+              (prev) =>
+                prev +
+                message.data.utterance.text
+                  .replace(/[^\p{L}\p{N}]+/gu, "")
+                  .trim()
+            );
           } else {
-            setContent(message.data.utterance.text.trim());
+            setContent(
+              message.data.utterance.text.replace(/[^\p{L}\p{N}]+/gu, "").trim()
+            );
           }
         }
       };
